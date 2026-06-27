@@ -23,7 +23,7 @@ wget https://raw.githubusercontent.com/SitrakaResearchAndPOC/srsran_leonardo/ref
 ```
 ## III. Building images
 ```
-docker  build -t srsran_leonardo_usrp:v1 .
+docker  build -t srsran_leonardo_usrp:v1 -f Dockerfile.usrp .
 ```
 
 ## IV. Running images
