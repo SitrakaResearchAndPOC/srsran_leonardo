@@ -236,9 +236,9 @@ WORKDIR /opt
 
 # uncomment the two manipulaton wget and bladerf-cli for flashing latest firmeware
 # RUN wget \
-    --tries=5 \
-    --timeout=30 \
-    https://www.nuand.com/fpga/hostedxA4-latest.rbf
+#    --tries=5 \
+#    --timeout=30 \
+#    https://www.nuand.com/fpga/hostedxA4-latest.rbf
 # RUN bladeRF-cli -l hostedxA4-latest.rbf || true
 
 WORKDIR /root
