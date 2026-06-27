@@ -182,8 +182,9 @@ RUN sed -i 's/^n_prb.*/n_prb = 15/' $ENB && \
 # RUN   sed -i 's/^tx_gain.*/tx_gain = 70/' $ENB && \
 #    sed -i 's/^rx_gain.*/rx_gain = 50/' $ENB 
 
-RUN sed -i '/\[rf\]/a device_name = uhd' $ENB && \
-    sed -i '/device_name = uhd/a device_args = send_frame_size=512,recv_frame_size=512,type=b200' $ENB 
+RUN sed -i '/\[rf\]/a device_name = uhd' $ENB 
+# For very big PRB generally >= 50 prb : 
+# RUN sed -i '/device_name = uhd/a device_args = send_frame_size=512,recv_frame_size=512,type=b200' $ENB 
 	
 # -------- rr.conf --------
 # change dl_earfcn to 2525 for phone ; please verify if the frequency is not used 
