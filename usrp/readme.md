@@ -85,7 +85,7 @@ Tape ctrl+shift+T
 ```
 cpupower frequency-set -g performance && docker exec -ti  srsran_leonardo_usrp bash -c 'srsenb'
 ```
-## IX. Sharing Internet
+## VII. Sharing Internet
 New terminal , tape ctrl+shit+t </br>
 ### Finding interface which gives internet
 ```
@@ -111,7 +111,7 @@ sysctl -w net.ipv4.ip_forward=1
 ufw disable
 ```
 
-## X. Configuring SIM & APN
+## VIII. Configuring SIM & APN
 1) Download [GR-SIM](https://github.com/SitrakaResearchAndPOC/gr-sim-write) </br>
 2) Download grsp config [CONFIG](https://github.com/SitrakaResearchAndPOC/srsran_leonardo/blob/main/configs_simcard_grsp/srsran_leonardo_xor.grsp) ; my SIM support only xor for authentication algorithm </br>
 3) Load and write the config on the green card using card write </br>
