@@ -222,6 +222,7 @@ ENV MNC=92
 RUN sed -i "/^\[enb\]/,/^\[/{s/^mcc *= *.*/mcc = ${MCC}/;s/^mnc *= *.*/mnc = ${MNC}/;}" /root/.config/srsran/enb.conf && \
     sed -i "/^\[mme\]/,/^\[/{s/^mcc *= *.*/mcc = ${MCC}/;s/^mnc *= *.*/mnc = ${MNC}/;}" /root/.config/srsran/epc.conf 
 
+# change directly if imsi exists 
 RUN sed -i "\|${MCC}${MNC}0100001101,|d" /root/.config/srsran/user_db.csv && \
 echo "ue2,xor,${MCC}${MNC}0100001101,6874736969202073796d4b2079650a73,opc,504f20634f6320504f50206363500a4f,8000,000000001389,7,dynamic" >> /root/.config/srsran/user_db.csv
 
