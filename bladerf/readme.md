@@ -70,16 +70,16 @@ Verify version of BladeRF
 ```
 docker exec -ti srsran_leonardo_bladerf bash -c "echo 'version' | bladeRF-cli -i"
 ```
-eg of output : 
+eg of output :  
 
-' root@dragon:/home/dragon# docker exec -ti srsran_leonardo_bladerf bash -c "echo 'version' | bladeRF-cli -i"
-[WARNING @ host/libraries/libbladeRF/src/board/bladerf2/bladerf2.c:360] Using legacy message size. Consider upgrading firmware >= v2.5.0 and fpga >= v0.16.0
+root@dragon:/home/dragon# docker exec -ti srsran_leonardo_bladerf bash -c "echo 'version' | bladeRF-cli -i"  </br>
+[WARNING @ host/libraries/libbladeRF/src/board/bladerf2/bladerf2.c:360] Using legacy message size. Consider upgrading firmware >= v2.5.0 and fpga >= v0.16.0 </br> </br> 
 
-  bladeRF-cli version:        1.10.0-git-41b7fc7-dirty
-  libbladeRF version:         2.6.1-git-41b7fc7-dirty
+  bladeRF-cli version:        1.10.0-git-41b7fc7-dirty </br>
+  libbladeRF version:         2.6.1-git-41b7fc7-dirty </br> </br>
 
-  Firmware version:           2.4.0-git-a3d5c55f
-  FPGA version:               0.14.0 (configured by USB host) '
+  Firmware version:           2.4.0-git-a3d5c55f </br>
+  FPGA version:               0.14.0 (configured by USB host) </br></br>
   
 Version of libbladerf >= version firmware and should without warning </br>
 find the adequat version at  https://www.nuand.com/fx eg : 2.6.0 </br>
@@ -92,7 +92,8 @@ FLASHING THE FIRMEWARE : Could break bladerf if the action is suddenly stopped
 docker exec -ti srsran_leonardo_bladerf bash -c "bladeRF-cli -f bladeRF_fw_v2.6.0.img"
 ```
 Unplug the bladerf wait 10second and replug </br>
-find adequat verstion at https://www.nuand.com/fpga_images/ ; the date of the fpga should be <= date of the firmeware </br>
+find adequat verstion at https://www.nuand.com/fpga_images/ ; </br>
+the date of the fpga should be <= date of the firmeware </br>
 eg date of firmware : 2025-05-11 - v2.6.0 and date of fpga 2025-05-11 - fpga_v0.16.0 </br>
 ```
 docker exec -ti srsran_leonardo_bladerf bash -c "wget https://www.nuand.com/fpga/v0.16.0/hostedxA4.rbf"
