@@ -176,7 +176,7 @@ RUN sed -i '/device_name/d' $ENB && \
 # Change  n_prb for 6 if BW = 1.4MHz
 # Change  n_prb for 15 if BW = 3MHz
 # Change  n_prb for 25 if BW = 5MHz
-RUN sed -i 's/^n_prb.*/n_prb = 15/' $ENB && \
+RUN sed -i 's/^n_prb.*/n_prb = 15/' $ENB 
 
 # If you have a good spectrum, tell me the optimized value of tx_gain = 80 and rx_gain = 40
 # RUN   sed -i 's/^tx_gain.*/tx_gain = 70/' $ENB && \
