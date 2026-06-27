@@ -1,7 +1,7 @@
 # SRSRAN LEONARDO USRP
 ## I. Installing tools
 ```
-rm -rf srsran_pluto ; mkdir srsran_pluto && cd srsran_pluto
+rm -rf srsran_leonardo_usrp ; mkdir srsran_leonardo_usrp && cd srsran_leonardo_usrp
 ```
 ```
 apt update
