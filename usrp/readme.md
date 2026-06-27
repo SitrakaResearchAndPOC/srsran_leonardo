@@ -54,7 +54,7 @@ docker run -tid --privileged \
   srsran_leonardo_usrp:v1
 ```
 
-## V. Testing driver PlutoSDR
+## V. Testing driver UHD
 ```
 xhost +
 ```
