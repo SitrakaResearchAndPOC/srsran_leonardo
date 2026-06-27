@@ -107,7 +107,7 @@ docker exec -ti srsran_leonardo_bladerf bash -c "echo 'version' | bladeRF-cli -i
 ```
 The display of version should be without @warning </br></br>
 
-Resume screenshot is at [screenshot_bladerf_firmeware]()
+Resume screenshot is at [screenshot_bladerf_firmeware](https://github.com/SitrakaResearchAndPOC/srsran_leonardo/tree/main/bladerf/screenshot_bladerf_firmeware)
 ## VI. Running srsRAN LTE
 
 ### ON TERMINAL 1
