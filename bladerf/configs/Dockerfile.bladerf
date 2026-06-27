@@ -1,0 +1,246 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GIT_TERMINAL_PROMPT=0
+
+# Mise à jour
+RUN apt-get update \
+    -o Acquire::Retries=5 \
+    -o Acquire::http::Timeout=30
+
+# Outils de base
+RUN apt-get install -y \
+    -o Acquire::Retries=5 \
+    --no-install-recommends \
+    net-tools \
+    zsh \
+    wireshark \
+    iptables \
+    nano \
+    inetutils-ping \
+    curl \
+    wget \
+    zip \
+    unzip \
+    git \
+    python3-pip
+
+# Dépendances SDR / BladeRF / srsRAN
+RUN apt-get install -y \
+    -o Acquire::Retries=5 \
+    --no-install-recommends \
+    build-essential \
+    cmake \
+    g++ \
+    pkg-config \
+    libcurl4-openssl-dev \
+    libusb-1.0-0-dev \
+    libncurses-dev \
+    libedit-dev \
+    libtecla-dev \
+    libfftw3-dev \
+    libmbedtls-dev \
+    libboost-program-options-dev \
+    libconfig++-dev \
+    libsctp-dev \
+    libboost-all-dev \
+    libgmp-dev \
+    swig \
+    python3-numpy \
+    python3-mako \
+    python3-sphinx \
+    python3-lxml \
+    doxygen \
+    libsdl1.2-dev \
+    libgsl-dev \
+    libqwt-qt5-dev \
+    libqt5opengl5-dev \
+    python3-pyqt5 \
+    liblog4cpp5-dev \
+    libzmq3-dev \
+    python3-yaml \
+    python3-click \
+    python3-click-plugins \
+    python3-zmq \
+    python3-scipy \
+    python3-gi \
+    python3-gi-cairo \
+    gobject-introspection \
+    gir1.2-gtk-3.0 \
+    python3-docutils \
+    python3-setuptools \
+    python3-ruamel.yaml \
+    python-is-python3 \
+    libtinfo5 \
+    libncurses5
+
+# Python
+RUN pip3 install --no-cache-dir mako
+
+############################################################
+# BladeRF Driver
+############################################################
+
+WORKDIR /opt
+
+RUN git clone \
+    --depth 1 \
+    --recurse-submodules \
+    --shallow-submodules \
+    https://github.com/Nuand/bladeRF.git
+
+WORKDIR /opt/bladeRF/build
+
+RUN cmake ../ && \
+    make -j$(nproc --ignore=1) && \
+    make install && \
+    ldconfig
+
+############################################################
+# srsRAN 4G
+############################################################
+
+WORKDIR /opt
+
+RUN curl -L \
+    --retry 5 \
+    --retry-delay 5 \
+    --connect-timeout 30 \
+    -o srsRAN_23_04.tar.gz \
+    https://github.com/srsran/srsRAN_4G/archive/refs/tags/release_23_04.tar.gz
+
+RUN tar -xvf srsRAN_23_04.tar.gz
+
+WORKDIR /opt/srsRAN_4G-release_23_04/build
+
+RUN cmake .. && \
+    make -j$(nproc --ignore=1)
+
+RUN make test || true
+
+RUN make install && \
+    ldconfig
+
+############################################################
+# OpenCells UICC
+############################################################
+
+WORKDIR /opt
+
+RUN curl -L \
+    --retry 5 \
+    --retry-delay 5 \
+    --connect-timeout 30 \
+    -o uicc-v3.2.tgz \
+    https://open-cells.com/d5138782a8739209ec5760865b1e53b0/uicc-v3.2.tgz
+
+RUN tar -xvf uicc-v3.2.tgz
+
+WORKDIR /opt/uicc-v3.2
+
+RUN make clean || true
+
+RUN make -j$(nproc --ignore=1)
+
+RUN ./program_uicc --help || true
+
+############################################################
+# Configuration srsRAN BladeRF
+############################################################
+
+RUN mkdir -p /root/.config/srsran
+
+RUN rm -rf /root/.config/srsran/*
+
+WORKDIR /tmp
+
+RUN wget \
+    --tries=5 \
+    --timeout=30 \
+    https://raw.githubusercontent.com/SitrakaResearchAndPOC/srslte_leonardo/main/srsran_config_bladerf.zip
+
+RUN unzip srsran_config_bladerf.zip
+
+RUN cp -r srsran/* /root/.config/srsran/
+
+# NEED TO READ FOR CONFIGURING 
+ENV ENB=/root/.config/srsran/enb.conf 
+ENV RR=/root/.config/srsran/rr.conf 
+ENV SIB=/root/.config/srsran/sib.conf 
+
+# -------- enb.conf cleanup --------
+RUN sed -i '/device_name/d' $ENB && \
+    sed -i '/device_args/d' $ENB && \
+    sed -i '/time_adv_nsamples/d' $ENB 
+
+# Change  n_prb for 6 if BW = 1.4MHz
+# Change  n_prb for 15 if BW = 3MHz
+# Change  n_prb for 25 if BW = 5MHz
+RUN sed -i 's/^n_prb.*/n_prb = 15/' $ENB 
+
+# If you have a good spectrum, tell me the optimized value of tx_gain = 80 and rx_gain = 40 
+# RUN   sed -i 's/^tx_gain.*/tx_gain = 70/' $ENB && \
+#    sed -i 's/^rx_gain.*/rx_gain = 50/' $ENB 
+
+RUN sed -i '/\[rf\]/a device_name = bladeRF' $ENB 
+# For very big PRB generally >= 50 prb : 
+# FOR BLADERF (HARD CODE ) 
+# NOT RUN sed -i '/device_name = uhd/a device_args = send_frame_size=512,recv_frame_size=512,type=b200' $ENB 
+	
+# -------- rr.conf --------
+# change dl_earfcn to 2525 for phone ; please verify if the frequency is not used 
+RUN sed -i '/cell_list/,/)/ s/^[[:space:]]*dl_earfcn[[:space:]]*=.*/    dl_earfcn = 2525;/' $RR 
+
+# -------- sib.conf --------
+# prb = 6 so value of prach_frequ_offset = 0
+# prb = 15 so value of prach_frequ_offset = 4
+# prb = 25 so value of prach_frequ_offset = 4
+RUN sed -i 's/^\([[:space:]]*prach_freq_offset[[:space:]]*=\).*/\1 4;/' $SIB  
+
+# =============================================================================
+# SIM CARD CONFIG
+#
+# Network:
+#   MCC = 208
+#   MNC = 92
+#
+# Subscriber:
+#   IMSI = 208920100001101
+#   K    = 6874736969202073796d4b2079650a73
+#   OPC  = 504f20634f6320504f50206363500a4f
+#
+# Updates:
+#   - /root/.config/srsran/enb.conf
+#   - /root/.config/srsran/epc.conf
+#   - /root/.config/srsran/user_db.csv
+# =============================================================================
+
+ENV MCC=208
+ENV MNC=92
+
+## xor or mil depend of the simcard : read the simcard using gr_sim.exe to find the supported authentication
+
+RUN sed -i "/^\[enb\]/,/^\[/{s/^mcc *= *.*/mcc = ${MCC}/;s/^mnc *= *.*/mnc = ${MNC}/;}" /root/.config/srsran/enb.conf && \
+    sed -i "/^\[mme\]/,/^\[/{s/^mcc *= *.*/mcc = ${MCC}/;s/^mnc *= *.*/mnc = ${MNC}/;}" /root/.config/srsran/epc.conf 
+
+# change directly if imsi exists 
+RUN sed -i "\|${MCC}${MNC}0100001101,|d" /root/.config/srsran/user_db.csv && \
+echo "ue2,xor,${MCC}${MNC}0100001101,6874736969202073796d4b2079650a73,opc,504f20634f6320504f50206363500a4f,8000,000000001389,7,dynamic" >> /root/.config/srsran/user_db.csv
+
+
+############################################################
+# Firmware BladeRF
+############################################################
+
+WORKDIR /opt
+
+# uncomment the two manipulaton wget and bladerf-cli for flashing latest firmeware
+# RUN wget \
+    --tries=5 \
+    --timeout=30 \
+    https://www.nuand.com/fpga/hostedxA4-latest.rbf
+# RUN bladeRF-cli -l hostedxA4-latest.rbf || true
+
+WORKDIR /root
+
+CMD ["/bin/bash"]
