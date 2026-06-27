@@ -178,7 +178,7 @@ RUN sed -i '/device_name/d' $ENB && \
 # Change  n_prb for 25 if BW = 5MHz
 RUN sed -i 's/^n_prb.*/n_prb = 15/' $ENB && \
 
-# If you have a good spectrum, tell me the optimized value of tx_gain and rx_gain 
+# If you have a good spectrum, tell me the optimized value of tx_gain = 80 and rx_gain = 40
 # RUN   sed -i 's/^tx_gain.*/tx_gain = 70/' $ENB && \
 #    sed -i 's/^rx_gain.*/rx_gain = 50/' $ENB 
 
@@ -223,7 +223,7 @@ RUN sed -i "/^\[enb\]/,/^\[/{s/^mcc *= *.*/mcc = ${MCC}/;s/^mnc *= *.*/mnc = ${M
     sed -i "/^\[mme\]/,/^\[/{s/^mcc *= *.*/mcc = ${MCC}/;s/^mnc *= *.*/mnc = ${MNC}/;}" /root/.config/srsran/epc.conf 
 
 RUN grep -q "${MCC}${MNC}0100001101," /root/.config/srsran/user_db.csv 2>/dev/null || \
-echo "ue1,xor,${MCC}${MNC}0100001101,6874736969202073796d4b2079650a73,opc,504f20634f6320504f50206363500a4f,8000,000000001389,7,dynamic" >> /root/.config/srsran/user_db.csv
+echo "ue2,xor,${MCC}${MNC}0100001101,6874736969202073796d4b2079650a73,opc,504f20634f6320504f50206363500a4f,8000,000000001389,7,dynamic" >> /root/.config/srsran/user_db.csv
 
 
 
