@@ -215,7 +215,7 @@ RUN sed -i 's/^\([[:space:]]*prach_freq_offset[[:space:]]*=\).*/\1 4;/' $SIB
 # =============================================================================
 
 ENV MCC=208
-ENV MNC=82
+ENV MNC=92
 
 ## xor or mil depend of the simcard : read the simcard using gr_sim.exe to find the supported authentication
 
