@@ -71,7 +71,7 @@ Verify version of BladeRF
 docker exec -ti srsran_leonardo_bladerf bash -c "echo 'version' | bladeRF-cli -i"
 ```
 eg of output :  
-``
+```
 root@dragon:/home/dragon# docker exec -ti srsran_leonardo_bladerf bash -c "echo 'version' | bladeRF-cli -i"  
 [WARNING @ host/libraries/libbladeRF/src/board/bladerf2/bladerf2.c:360] Using legacy message size. Consider upgrading firmware >= v2.5.0 and fpga >= v0.16.0 
 
@@ -80,7 +80,7 @@ root@dragon:/home/dragon# docker exec -ti srsran_leonardo_bladerf bash -c "echo 
 
   Firmware version:           2.4.0-git-a3d5c55f 
   FPGA version:               0.14.0 (configured by USB host)
-``
+```
 </br>   
 Version of libbladerf >= version firmware and should without warning </br>
 find the adequat version at  https://www.nuand.com/fx eg : 2.6.0 </br>
